@@ -4,24 +4,35 @@ import java.util.ArrayList;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
+/**
+ * Classe représentant la grille de jeu.
+ */
 public class Othello {
-
-  private static Othello instance;
+  /**
+   * Nombre de lignes et de colonnes de la grille.
+   */
   public static final int BOARD_SIZE = 8;
+  /**
+   * Taille d'une cellule de la grille.
+   */
   public static final int CELL_SIZE = 50;
+  /**
+   * Grille de jeu.
+   */
   private final Cell[][] board = new Cell[BOARD_SIZE][BOARD_SIZE];
 
+  /**
+   * Constructeur.
+   */
   public Othello() {
-    instance = this;
   }
 
-  public static Othello getInstance() {
-    if (instance == null) {
-      instance = new Othello();
-    }
-    return instance;
-  }
-
+  /**
+   * Méthode remettant la grille à 0.
+   *
+   * @param gridPane Grille de jeu
+   * @return Grille de jeu
+   */
   public GridPane reset(GridPane gridPane) {
     for (int row = 0; row < BOARD_SIZE; row++) {
       for (int col = 0; col < BOARD_SIZE; col++) {
@@ -46,6 +57,11 @@ public class Othello {
     return gridPane;
   }
 
+  /**
+   * Méthode vérifiant si la grille est pleine.
+   *
+   * @return true si la grille est pleine, false sinon
+   */
   public boolean grillePleine() {
     for (int row = 0; row < BOARD_SIZE; row++) {
       for (int col = 0; col < BOARD_SIZE; col++) {
@@ -57,6 +73,14 @@ public class Othello {
     return true;
   }
 
+  /**
+   * Méthode vérifiant si on peut capturer des pions.
+   *
+   * @param row Coordonnées de la cellule où on va poser un pion
+   * @param col Coordonnées de la cellule où on va poser un pion
+   * @param couleur Couleur du pion à poser
+   * @return true si on peut capturer des pions, false sinon
+   */
   public boolean canCatch(int row, int col, Color couleur) {
     return !getCatchable(row, col, couleur).isEmpty();
   }
@@ -70,6 +94,12 @@ public class Othello {
     return cellulesCapturables;
   }
 
+  /**
+   * Méthode donnant les coups possibles.
+   *
+   * @param couleur Couleur du pion à poser
+   * @return Liste des coups possibles
+   */
   public ArrayList<Cell> getPossibleMoves(Color couleur) {
     ArrayList<Cell> possibleMoves = new ArrayList<>();
     for (int row = 0; row < BOARD_SIZE; row++) {
@@ -82,6 +112,13 @@ public class Othello {
     return possibleMoves;
   }
 
+  /**
+   * Méthode capturant les pions.
+   *
+   * @param row Coordonnées de la cellule où on a posé un pion
+   * @param col Coordonnées de la cellule où on a posé un pion
+   * @param couleur Couleur du pion à poser
+   */
   private void catchCell(int row, int col, Color couleur) {
     ArrayList<Cell> cellulesCapturables = getCatchable(row, col, couleur);
     for (Cell cell : cellulesCapturables) {
@@ -89,6 +126,12 @@ public class Othello {
     }
   }
 
+  /**
+   * Méthode donnant le score d'un joueur.
+   *
+   * @param couleur Couleur du joueur
+   * @return Score du joueur
+   */
   public int getScore(Color couleur) {
     int score = 0;
     for (int row = 0; row < BOARD_SIZE; row++) {
@@ -101,11 +144,18 @@ public class Othello {
     return score;
   }
 
+  /**
+   * Méthode vérifiant si on peut poser un pion et le posant sur la grille.
+   *
+   * @param cell Cellule où on veut poser un pion
+   * @param couleur Couleur du pion à poser
+   * @return true si on a posé un pion, false sinon
+   */
   public boolean jouer(Cell cell, Color couleur) {
     boolean pionPose = false;
-    if (cell.caseVide() && !grillePleine() &&
-        canCatch(cell.getRow(), cell.getCol(), Color.BLACK) ||
-        canCatch(cell.getRow(), cell.getCol(), Color.WHITE)) {
+    if (cell.caseVide() && !grillePleine()
+        && canCatch(cell.getRow(), cell.getCol(), Color.BLACK)
+        || canCatch(cell.getRow(), cell.getCol(), Color.WHITE)) {
       if (canCatch(cell.getRow(), cell.getCol(), couleur)) {
         cell.poserPion(new Pion(couleur));
         catchCell(cell.getRow(), cell.getCol(), couleur);
@@ -115,14 +165,24 @@ public class Othello {
     return pionPose;
   }
 
-  public Cell getCell(int row, int col) {
-    return board[row][col];
-  }
-
+  /**
+   * Méthode donnant la grille de jeu.
+   *
+   * @return Grille de jeu
+   */
   public Cell[][] getBoard() {
     return board;
   }
 
+  /**
+   * Méthode vérifiant si une ligne est capturable.
+   *
+   * @param board Grille de jeu
+   * @param row Coordonnées de la cellule où on va poser un pion
+   * @param col Coordonnées de la cellule où on va poser un pion
+   * @param couleur Couleur du pion à poser
+   * @return Liste des cellules capturables
+   */
   public static ArrayList<Cell> checkRow(Cell[][] board, int row, int col, Color couleur) {
     ArrayList<Cell> cellulesCapturables = new ArrayList<>();
     ArrayList<Cell> pionsLigne = new ArrayList<>();
@@ -152,6 +212,15 @@ public class Othello {
     return cellulesCapturables;
   }
 
+  /**
+   * Méthode vérifiant si une colonne est capturable.
+   *
+   * @param board Grille de jeu
+   * @param row Coordonnées de la cellule où on va poser un pion
+   * @param col Coordonnées de la cellule où on va poser un pion
+   * @param couleur Couleur du pion à poser
+   * @return Liste des cellules capturables
+   */
   public static ArrayList<Cell> checkCol(Cell[][] board, int row, int col, Color couleur) {
     ArrayList<Cell> cellulesCapturables = new ArrayList<>();
     ArrayList<Cell> pionsColonne = new ArrayList<>();
@@ -181,11 +250,20 @@ public class Othello {
     return cellulesCapturables;
   }
 
+  /**
+   * Méthode vérifiant si les diagonales sont capturables.
+   *
+   * @param board Grille de jeu
+   * @param row Coordonnées de la cellule où on va poser un pion
+   * @param col Coordonnées de la cellule où on va poser un pion
+   * @param couleur Couleur du pion à poser
+   * @return Liste des cellules capturables
+   */
   public static ArrayList<Cell> checkDiag(Cell[][] board, int row, int col, Color couleur) {
     ArrayList<Cell> cellulesCapturables = new ArrayList<>();
     ArrayList<Cell> pionsDiag = new ArrayList<>();
 
-    for (int i = 1 ; row - i >= 0 && col -i >= 0 ; i++) {
+    for (int i = 1; row - i >= 0 && col - i >= 0; i++) {
       Cell cellule = board[row - i][col - i];
       if (cellule.getPion() == null) {
         break;
@@ -197,7 +275,7 @@ public class Othello {
       }
     }
     pionsDiag.clear();
-    for (int i = 1 ; row + i < Othello.BOARD_SIZE && col + i < Othello.BOARD_SIZE ; i++) {
+    for (int i = 1; row + i < Othello.BOARD_SIZE && col + i < Othello.BOARD_SIZE; i++) {
       Cell cellule = board[row + i][col + i];
       if (cellule.getPion() == null) {
         break;
@@ -209,7 +287,7 @@ public class Othello {
       }
     }
     pionsDiag.clear();
-    for (int i = 1 ; row - i >= 0 && col + i < Othello.BOARD_SIZE ; i++) {
+    for (int i = 1; row - i >= 0 && col + i < Othello.BOARD_SIZE; i++) {
       Cell cellule = board[row - i][col + i];
       if (cellule.getPion() == null) {
         break;
@@ -221,7 +299,7 @@ public class Othello {
       }
     }
     pionsDiag.clear();
-    for (int i = 1 ; row + i < Othello.BOARD_SIZE && col - i >= 0 ; i++) {
+    for (int i = 1; row + i < Othello.BOARD_SIZE && col - i >= 0; i++) {
       Cell cellule = board[row + i][col - i];
       if (cellule.getPion() == null) {
         break;

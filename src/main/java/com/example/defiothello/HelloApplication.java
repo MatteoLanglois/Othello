@@ -1,39 +1,57 @@
 package com.example.defiothello;
 
+import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * Classe principale de l'application.
+ */
 public class HelloApplication extends Application {
 
+  /**
+   * Variables globales pour la fenêtre de lancement du jeu.
+   */
   private static final Pane launcher = new Pane();
   private static final Label title = new Label("Othello");
   private static final Label description = new Label("Comment voulez vous jouer ?");
   private static final Button button1 = new Button("Joueur contre joueur");
   private static final Button button2 = new Button("Joueur contre IA");
   private static final Button button3 = new Button("IA contre IA");
+  private static final Button boutonRegle = new Button("Règles");
 
+  /**
+   * Variables globales pour la fenêtre de jeu.
+   */
   private static final GridPane root = new GridPane();
   private static final VBox vbox = new VBox();
   private static final Label joueur = new Label("Joueur 1");
-
   private static final Label score = new Label("Partie non commencée");
-
   private static final Button reset = new Button("Reset");
 
+  /**
+   * Définition des scènes.
+   */
   private static final Scene sceneLauncher = new Scene(launcher, 600, 300);
   private static final Scene sceneGame = new Scene(vbox);
-  private static final Button boutonRegle = new Button("Règles");
+
   private static Stage PrimaryStage;
   Alert regle = new Alert(Alert.AlertType.INFORMATION);
 
 
+  /**
+   * Méthode principale de l'application.
+   *
+   * @param stage the primary stage for this application, onto which the application scene can
+   *              be set. Applications may create other stages, if needed, but they will not be
+   *              primary stages.
+   */
   @Override
   public void start(Stage stage) {
     PrimaryStage = stage;
@@ -43,6 +61,9 @@ public class HelloApplication extends Application {
     showLauncher();
   }
 
+  /**
+   * Méthode initialisant tous les éléments de la fenêtre de lancement.
+   */
   private void initWindow() {
     title.setStyle("-fx-font-size: 28px; -fx-font-weight: bold;");
     title.setAlignment(javafx.geometry.Pos.CENTER);
@@ -102,10 +123,18 @@ public class HelloApplication extends Application {
             + "joueurs ne peut jouer, la partie est terminée. Le joueur qui a le plus de pions "
             + "gagne la partie. Si les deux joueurs ont le même nombre de pions, la partie est "
             + "nulle.");
+    joueur.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+    score.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+    reset.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
     launcher.getChildren().addAll(button1, button2, button3, boutonRegle);
   }
 
+  /**
+   * Méthode initialisant tous les éléments de la fenêtre de jeu.
+   *
+   * @param nbJoueurs le nombre de joueurs.
+   */
   private void initBoard(int nbJoueurs) {
     vbox.getChildren().clear();
     Partie partie = new Partie(nbJoueurs, root, vbox, joueur, score, reset);
@@ -117,11 +146,19 @@ public class HelloApplication extends Application {
     PrimaryStage.show();
   }
 
+  /**
+   * Méthode affichant la fenêtre de lancement.
+   */
   public static void showLauncher() {
     PrimaryStage.setScene(sceneLauncher);
     PrimaryStage.show();
   }
 
+  /**
+   * Méthode lançant l'application.
+   *
+   * @param args les arguments de la ligne de commande.
+   */
   public static void main(String[] args) {
     launch();
   }

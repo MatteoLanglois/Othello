@@ -13,6 +13,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+/**
+ * Classe représentant une partie.
+ */
 public class Partie {
   private final Othello othello;
   private final Joueur joueur1;
@@ -20,16 +23,26 @@ public class Partie {
   private Joueur joueurCourant;
   private int nbCoups;
   private GridPane gridPane;
-  private final Label Lbljoueur;
+  private final Label lblJoueur;
   private Label score;
   private VBox vbox;
 
+  /**
+   * Constructeur.
+   *
+   * @param nbJoueurs Nombre de joueurs humains
+   * @param root Grille de jeu
+   * @param vbox Conteneur des boutons
+   * @param joueur Label du joueur courant
+   * @param score Label du score
+   * @param reset Bouton de reset
+   */
   public Partie(int nbJoueurs, GridPane root, VBox vbox,
                 Label joueur, Label score, Button reset) {
     this.othello = new Othello();
     this.gridPane = root;
     this.vbox = vbox;
-    this.Lbljoueur = joueur;
+    this.lblJoueur = joueur;
     this.score = score;
     if (nbJoueurs == 2) {
       joueur1 = new Joueur("Joueur 1", Color.BLACK);
@@ -52,17 +65,30 @@ public class Partie {
     this.vbox = vbox;
 
     this.gridPane = othello.reset(this.gridPane);
-    this.Lbljoueur.setText("Le joueur noir commence");
+    this.lblJoueur.setText("Le joueur noir commence");
     this.score.setText("Partie non commencée");
     this.vbox.layout();
 
     reset.setOnAction(e -> {
       this.gridPane = othello.reset(this.gridPane);
-      this.Lbljoueur.setText("Le joueur noir commence");
+      this.lblJoueur.setText("Le joueur noir commence");
       this.score.setText("Partie non commencée");
       this.vbox.layout();
       joueurCourant = joueur1;
       nbCoups = 1;
+
+      for (int i = 0; i < Othello.BOARD_SIZE; i++) {
+        for (int j = 0; j < Othello.BOARD_SIZE; j++) {
+          Cell cell = othello.getBoard()[i][j];
+          cell.setOnMouseClicked(event -> {
+            if (joueurCourant instanceof Bot) {
+              return;
+            }
+            jouerTour(cell);
+          });
+        }
+      }
+      commencer();
     });
 
     for (int i = 0; i < Othello.BOARD_SIZE; i++) {
@@ -80,17 +106,24 @@ public class Partie {
     commencer();
   }
 
+  /**
+   * Méthode lançant la partie.
+   */
   public void commencer() {
     if (joueurCourant instanceof Bot) {
       jouerTour(((Bot) joueurCourant).jouer(othello));
     }
   }
 
+  /**
+   * Méthode s'activant à chaque tour.
+   *
+   * @param celluleChoisie Cellule choisie par le joueur
+   */
   public void jouerTour(Cell celluleChoisie) {
     gridPane.layout();
     vbox.layout();
     boolean pionPose = false;
-    boolean oldJoueur = !(joueurCourant instanceof Bot);
     if (partieTerminee()) {
       terminePartie();
     } else {
@@ -103,14 +136,13 @@ public class Partie {
         pionPose = othello.jouer(celluleChoisie, joueurCourant.getCouleur());
       } else if (celluleChoisie != null && celluleChoisie.getPion() == null) {
         pionPose = othello.jouer(celluleChoisie, joueurCourant.getCouleur());
-        oldJoueur = true;
       }
     }
     if (pionPose) {
       nbCoups++;
       joueurCourant = joueurCourant == joueur1 ? joueur2 : joueur1;
       gridPane.layout();
-      this.Lbljoueur.setText("Tour n°" + nbCoups + " : Au tour de " + joueurCourant.getNom());
+      this.lblJoueur.setText("Tour n°" + nbCoups + " : Au tour de " + joueurCourant.getNom());
       score.setText("Score : Noir " + othello.getScore(Color.BLACK) + " - Blanc "
           + othello.getScore(Color.WHITE));
       vbox.layout();
@@ -119,7 +151,7 @@ public class Partie {
         return;
       }
     }
-    if (joueurCourant instanceof Bot || oldJoueur && pionPose) {
+    if (joueurCourant instanceof Bot && pionPose) {
       jouerTour(((Bot) joueurCourant).jouer(othello));
       gridPane.layout();
       vbox.layout();
@@ -129,7 +161,7 @@ public class Partie {
   }
 
   private void terminePartie() {
-    this.Lbljoueur.setText("Partie terminée");
+    this.lblJoueur.setText("Partie terminée");
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle("Partie terminée !");
     alert.setHeaderText("La partie est terminée !");
